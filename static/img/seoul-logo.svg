@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" role="img" aria-labelledby="title desc">
+  <title id="title">서울특별시 로고</title>
+  <desc id="desc">서울특별시 텍스트와 원형 심볼로 구성된 단색 로고</desc>
+  <rect x="0.5" y="0.5" width="159" height="39" rx="8" fill="#fff0ef" stroke="#e7bdbb"/>
+  <g transform="translate(12 8)" fill="none" stroke="#2563eb" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M7 13l4 4 7-9" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="38" y="25" font-family="Inter, 'Noto Sans KR', sans-serif" font-size="14" font-weight="700" fill="#2563eb">서울특별시</text>
+</svg>
