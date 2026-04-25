@@ -1,5 +1,6 @@
 from datetime import datetime
 from pathlib import Path
+import os
 import sqlite3
 import uuid
 
@@ -9,8 +10,8 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "board.db"
-UPLOAD_DIR = BASE_DIR / "static" / "uploads"
+DB_PATH = Path(os.getenv("DATABASE_PATH", str(BASE_DIR / "board.db")))
+UPLOAD_DIR = Path(os.getenv("UPLOAD_FOLDER", str(BASE_DIR / "static" / "uploads")))
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024
 
@@ -235,4 +236,8 @@ init_db()
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "5000")),
+        debug=os.getenv("FLASK_DEBUG", "0") == "1",
+    )
