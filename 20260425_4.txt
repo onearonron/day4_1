@@ -1,0 +1,39 @@
+Flask 프로젝트를 시작하고 싶어.
+가상환경을 만들, Flask 설치하고,
+Hello World가 뜨는 app.py 따지 까지 만들어줘.
+난 windows야.
+
+
+  - URL: http://127.0.0.1:5000/                                                                                                                                               
+  - 응답: Hello, World!
+  - 백그라운드 작업 ID: bawk0198c    
+
+1. 프롬프트
+심플한 블로그 게시판 UI 3화면
+- 목록, 상세, 글쓰기
+
+2. 스타일
+- 반응형
+- 뜨거운 붉은 톤
+- 깔끔한 타이포그래피
+
+3. 화면구성
+- 목록 : 게시글 리스트 + 작성 시각
+- 상세 : 제목 + 본문 + 버튼 3개
+- 글쓰기 : 제목 입력 + 내용 입력
+
+
+git 저장소 만들고
+https://github.com/onearonron/day3-hello
+에 index.html 올려줘
+
+C:\Users\user\workspaces\day3\docs\design\stitch_company_website_design.zip
+경로의 파일 디자인을 반영해서 웹사이트를 수정해줘
+
+C:\Users\user\workspaces\day3\docs\design\20220901580156.jpg경로의 사진을 메인 화면에 반영해줘
+
+git 저장소 만들고
+https://github.com/onearonron/day4_1
+에 파일을 올려줘
+
+

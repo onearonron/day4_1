@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#596578",
+                    "on-surface-variant": "#5d3f3e",
+                    "primary": "#bb0026",
+                    "on-error-container": "#93000a",
+                    "primary-container": "#e51936",
+                    "surface-bright": "#fff8f7",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#70d6da",
+                    "primary-fixed-dim": "#ffb3b1",
+                    "on-secondary-fixed": "#101c2c",
+                    "on-tertiary-container": "#f2ffff",
+                    "tertiary-fixed": "#8ef3f7",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#402b2a",
+                    "surface-tint": "#bf0027",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#e7bdbb",
+                    "background": "#fff8f7",
+                    "outline": "#926e6d",
+                    "surface-container-high": "#ffe1e0",
+                    "secondary-container": "#d7e3fa",
+                    "on-primary-container": "#fffbff",
+                    "on-primary-fixed-variant": "#92001c",
+                    "inverse-primary": "#ffb3b1",
+                    "secondary": "#535f72",
+                    "tertiary": "#00676a",
+                    "surface-dim": "#f4d2d1",
+                    "on-primary-fixed": "#410007",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-container": "#008286",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#002021",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#fff0ef",
+                    "surface": "#fff8f7",
+                    "primary-fixed": "#ffdad8",
+                    "inverse-on-surface": "#ffedeb",
+                    "secondary-fixed-dim": "#bbc7dd",
+                    "on-secondary-fixed-variant": "#3c475a",
+                    "surface-container": "#ffe9e7",
+                    "on-surface": "#291716",
+                    "on-tertiary-fixed-variant": "#004f52",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#fcdbd9",
+                    "secondary-fixed": "#d7e3fa",
+                    "on-background": "#291716",
+                    "surface-container-highest": "#fcdbd9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "lg": "48px",
+                    "container-max": "1140px",
+                    "xl": "80px",
+                    "sm": "12px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "base": "8px",
+                    "md": "24px"
+            },
+            "fontFamily": {
+                    "h2": ["Work Sans"],
+                    "h1": ["Work Sans"],
+                    "label-sm": ["Inter"],
+                    "h3": ["Work Sans"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "h2": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "h1": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "h3": ["24px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 35%; /* Simulated progress */
+            height: 4px;
+            background-color: #bb0026;
+            z-index: 100;
+        }
+        .reading-lane {
+            max-width: 720px;
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background selection:bg-primary selection:text-white">
+<div class="reading-progress"></div>
+<nav class="bg-white dark:bg-slate-900 docked full-width top-0 border-b-2 border-gray-100 dark:border-gray-800 flat no shadows sticky z-50">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-base">
+<span class="text-2xl font-black italic tracking-tighter text-[#EF233C] dark:text-[#EF233C]">RED_EDIT</span>
+</div>
+<div class="hidden md:flex items-center gap-lg font-['Work_Sans'] antialiased text-sm font-medium uppercase tracking-widest">
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#EF233C] transition-colors" href="#">Latest</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#EF233C] transition-colors" href="#">Trending</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#EF233C] transition-colors" href="#">Categories</a>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-slate-600 hover:bg-slate-50 p-2 rounded transition-all" data-icon="search">search</button>
+<button class="material-symbols-outlined text-slate-600 hover:bg-slate-50 p-2 rounded transition-all" data-icon="notifications">notifications</button>
+<button class="hidden md:block bg-primary text-white px-md py-xs rounded font-label-sm uppercase tracking-widest hover:bg-primary-container transition-all">Write</button>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline" data-alt="close-up portrait of a professional editor in a modern office setting, soft natural light, shallow depth of field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAopCtL4uth5kO97luOFhUmHOsDjnDWh-uoWOcMMZyWkrF0NWmNsitvATVITvW6M5X4cQEm8jMK0Hj8ha7g35-JHbM1B8_Hghl_-8H7zrWIXIz9uB9AdEPNLSHq6X6NBBbh_PIuY4SjeoWFuNm42eJv6mc0ZAZbDctEabjZ-VNLKAPgktEMLfTXYWu46uQgQ0iNZOO5GjCxJjyJsc9FhcMJmJXTQu-Zf4A3zNMB7AWjGFhd3Xt30_SwyNO1_4ur7LNHvz7Fl6oZPER"/>
+</div>
+</div>
+</nav>
+<main class="w-full pt-xl pb-xl">
+<article class="reading-lane mx-auto px-gutter">
+<header class="mb-lg">
+<div class="flex items-center gap-sm mb-md">
+<span class="bg-surface-variant text-on-surface-variant px-sm py-xs font-label-sm uppercase rounded">Digital Transformation</span>
+<span class="text-on-surface-variant font-label-sm">8 MIN READ</span>
+</div>
+<h1 class="font-h1 text-h1 text-on-surface mb-md">The Architectural Shift of Digital Newsrooms in 2024</h1>
+<div class="flex items-center gap-md py-md border-y border-outline-variant">
+<img alt="Author" class="w-12 h-12 rounded-full" data-alt="professional headshot of a middle-aged male journalist with glasses, neutral gray background, clean lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_SJtd-KZ90qJ832dn8DJJHUHF1ifOGGGjgjqYHQVzY95oMrQLZTuBRMfHB38cuV9sHoDCW6-mopG0yJnku5yXxfxwie5snaICSnV21-ASv2lr0RbaPWEfqBXTozbzolj0bPqYE-c4Wld2tr3W5aCHEYbkBiv9gNoiCkUJoDH2eWsA7zpK1xW5fct5BcxNW-TUIj2Ca-z-zzl8IzMxHkKISzlb9gMYrz3Oj-l_kyCdW2zgE3zGDNxxrvlb8BYZntjY9CQ9KmAmcQ_x"/>
+<div>
+<p class="font-h3 text-body-md font-bold text-on-surface">Julian Vane</p>
+<p class="font-label-sm text-on-secondary-container">Senior Editorial Strategist • May 24, 2024</p>
+</div>
+</div>
+</header>
+<section class="mb-xl">
+<img alt="Main content" class="w-full aspect-video object-cover rounded-lg mb-lg border border-outline-variant" data-alt="modern minimalist newsroom with glass partitions, red accent furniture, high-end workstations, cinematic lighting, wide angle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpa2knZ8jnXFet_9G6RaaO6wnBnpI2_AmSMuUTGljCLcf6EfDyx5eVmQ77mHJRpZ3eqs5nsw5qnmcidXFMmOG_mbSkL3PJc79PscYV6eBm-2hZQJUYWRTppGqEa0OtTMduJEV0M23keHoa_qHsr_HrH-jVgcaCUFZ7NT3knWA5rabNwZ29pjmHFQkpqamIvx0aaE_CSQWgIO4XL0kuAGCHK1iNp1JRo2r68ykWCNZ_nUxChRFA0FQ0AN4T_7B3fCf7AXVwCVcVFea-"/>
+<div class="space-y-md font-body-lg text-body-lg text-on-surface leading-relaxed">
+<p class="first-letter:text-5xl first-letter:font-black first-letter:text-primary first-letter:mr-xs first-letter:float-left">T</p>
+<p>he landscape of digital publishing is undergoing a seismic shift. As we navigate through the mid-point of the decade, the integration of generative AI and immersive layout systems has moved from experimental fringe to the core of editorial strategy. What we are witnessing is not just an evolution of tools, but a complete reimagining of the reader's journey.</p>
+<h2 class="font-h2 text-h2 text-on-surface mt-xl mb-md">The Minimalist Imperative</h2>
+<p>Readers are increasingly fatigued by the cognitive load of traditional "busy" news sites. The trend toward extreme minimalism, punctuated by high-contrast accents like our signature Hot Red, isn't just an aesthetic choice—it's a navigational beacon. By stripping away non-essential UI elements, we allow the content to breathe and the message to resonate with professional reliability.</p>
+<blockquote class="border-l-4 border-primary pl-lg py-sm my-lg italic font-h3 text-h3 text-primary-fixed-variant bg-surface-container-low rounded-r-lg">
+                        "The future of news is not about more information, but about better hierarchy and faster clarity."
+                    </blockquote>
+<p>Our approach at RED_EDIT has always been to prioritize the 'Reading Lane.' By constraining the content width to approximately 720px on desktop, we mimic the optimal line length found in high-end print magazines, reducing eye strain and increasing comprehension rates across complex long-form pieces.</p>
+<h3 class="font-h3 text-h3 text-on-surface mt-lg mb-sm">Key Takeaways for 2024:</h3>
+<ul class="list-none space-y-sm">
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span>Tonal layering replaces heavy shadows for a flatter, modern aesthetic.</span>
+</li>
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span>Rhythmic spacing based on an 8px scale ensures visual harmony.</span>
+</li>
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span>High-contrast call-to-actions drive engagement without clutter.</span>
+</li>
+</ul>
+</div>
+</section>
+<section class="border-t-2 border-primary pt-lg mt-xl flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="flex gap-sm">
+<button class="flex items-center gap-xs px-md py-sm bg-primary text-white rounded font-label-sm uppercase tracking-widest hover:bg-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+                        Edit Post
+                    </button>
+<button class="flex items-center gap-xs px-md py-sm border-2 border-primary text-primary bg-transparent rounded font-label-sm uppercase tracking-widest hover:bg-surface-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+                        Delete
+                    </button>
+</div>
+<button class="flex items-center gap-xs text-slate-600 hover:text-primary font-label-sm uppercase tracking-widest transition-all">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+                    Back to List
+                </button>
+</section>
+</article>
+</main>
+<footer class="bg-slate-50 dark:bg-slate-950 w-full border-t border-gray-200 dark:border-gray-800">
+<div class="max-w-7xl mx-auto py-12 px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex flex-col gap-xs">
+<span class="text-lg font-black text-slate-900 dark:white">RED_EDIT</span>
+<p class="font-['Work_Sans'] text-xs font-normal text-slate-500">© 2024 RED_EDIT Digital Publishing. All rights reserved.</p>
+</div>
+<div class="flex gap-lg font-['Work_Sans'] text-xs font-normal text-slate-500">
+<a class="hover:underline decoration-[#EF233C] decoration-2 underline-offset-4" href="#">About</a>
+<a class="hover:underline decoration-[#EF233C] decoration-2 underline-offset-4" href="#">Privacy Policy</a>
+<a class="hover:underline decoration-[#EF233C] decoration-2 underline-offset-4" href="#">Terms of Service</a>
+<a class="hover:underline decoration-[#EF233C] decoration-2 underline-offset-4" href="#">Contact</a>
+<a class="hover:underline decoration-[#EF233C] decoration-2 underline-offset-4" href="#">RSS</a>
+</div>
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-slate-400 hover:text-primary cursor-pointer transition-colors" data-icon="share">share</span>
+<span class="material-symbols-outlined text-slate-400 hover:text-primary cursor-pointer transition-colors" data-icon="mail">mail</span>
+</div>
+</div>
+</footer>
+</body></html>
