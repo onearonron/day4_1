@@ -46,6 +46,9 @@
               <h2 class="font-['Work_Sans'] text-[32px] leading-[1.2] font-bold tracking-[-0.01em] mb-3 group-hover:text-[#bb0026] transition-colors">
                 <a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a>
               </h2>
+              {% if post.image_path %}
+              <img src="{{ url_for('static', filename=post.image_path) }}" alt="게시글 이미지" class="w-full h-40 object-cover border border-[#e7bdbb] mb-4"/>
+              {% endif %}
               <p class="font-['Inter'] text-[16px] leading-[1.5] text-[#596578] mb-4">
                 {{ post.content[:140] }}{% if post.content|length > 140 %}...{% endif %}
               </p>

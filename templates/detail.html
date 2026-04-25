@@ -37,10 +37,24 @@
         </header>
 
         <section class="mb-12">
+          {% if post.image_path %}
+          <img src="{{ url_for('static', filename=post.image_path) }}" alt="게시글 이미지" class="w-full max-h-[420px] object-cover border border-[#e7bdbb] mb-6"/>
+          {% endif %}
           <div class="space-y-4 text-[18px] leading-[1.8] text-[#5d3f3e] whitespace-pre-wrap">{{ post.content }}</div>
         </section>
 
-        <section class="border-t-2 border-[#bb0026] pt-8 mt-12 flex justify-end">
+        <section class="border-t-2 border-[#bb0026] pt-8 mt-12 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <a class="inline-flex items-center gap-1 bg-[#bb0026] text-white px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-[#e51936] transition-all" href="{{ url_for('post_edit', post_id=post.id) }}">
+              수정
+            </a>
+            <form method="post" action="{{ url_for('post_delete', post_id=post.id) }}" onsubmit="return confirm('정말 삭제할까요?');">
+              <button type="submit" class="inline-flex items-center gap-1 border-2 border-[#bb0026] text-[#bb0026] px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-[#ffe9e7] transition-all">
+                삭제
+              </button>
+            </form>
+          </div>
+
           <a class="flex items-center gap-1 text-slate-600 hover:text-[#bb0026] text-xs font-semibold uppercase tracking-widest transition-all" href="{{ url_for('post_list') }}">
             <span class="material-symbols-outlined">arrow_back</span>
             Back to List

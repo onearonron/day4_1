@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>글쓰기</title>
+  <title>{{ page_title }}</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -29,7 +29,7 @@
       <section class="md:col-span-8 max-w-[760px]">
         <div class="flex items-center gap-1 text-[#bb0026] text-xs font-semibold uppercase tracking-widest mb-8">
           <span class="material-symbols-outlined text-[16px]">edit_note</span>
-          Drafting post
+          {% if submit_label == 'Update' %}Editing post{% else %}Drafting post{% endif %}
         </div>
 
         {% if error %}
@@ -38,7 +38,7 @@
         </div>
         {% endif %}
 
-        <form method="post" action="{{ url_for('post_new') }}" class="flex flex-col gap-6">
+        <form method="post" action="{{ form_action }}" enctype="multipart/form-data" class="flex flex-col gap-6">
           <div class="group border-b-2 border-[#e7bdbb] focus-within:border-[#bb0026] transition-colors">
             <input name="title" value="{{ title }}" required class="w-full bg-transparent border-none p-0 focus:ring-0 font-['Work_Sans'] text-[48px] leading-[1.1] tracking-[-0.02em] font-bold placeholder:text-[#926e6d]" placeholder="Enter post title..." type="text"/>
           </div>
@@ -47,10 +47,18 @@
             <textarea name="content" required class="w-full min-h-[420px] bg-transparent border border-[#e7bdbb] p-4 focus:ring-0 focus:border-[#bb0026] font-['Inter'] text-[18px] leading-[1.6] text-[#5d3f3e] placeholder:text-[#926e6d] resize-y" placeholder="Tell your story...">{{ content }}</textarea>
           </div>
 
+          <div class="flex flex-col gap-2">
+            <label for="image" class="text-xs font-semibold uppercase tracking-widest text-[#596578]">사진 업로드</label>
+            <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" class="block w-full border border-[#e7bdbb] bg-white px-3 py-2 text-sm text-[#5d3f3e]"/>
+            {% if image_path %}
+            <img src="{{ url_for('static', filename=image_path) }}" alt="현재 업로드 이미지" class="h-28 w-auto border border-[#e7bdbb] bg-white"/>
+            {% endif %}
+          </div>
+
           <div class="flex items-center justify-end gap-3">
             <a class="px-5 py-2 border-2 border-[#bb0026] text-[#bb0026] text-xs font-semibold uppercase tracking-widest hover:bg-[#ffe9e7]" href="{{ url_for('post_list') }}">Cancel</a>
             <button type="submit" class="bg-[#EF233C] text-white px-6 py-2 text-xs font-semibold uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all">
-              Publish
+              {{ submit_label }}
             </button>
           </div>
         </form>
