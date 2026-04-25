@@ -5,6 +5,7 @@ import sqlite3
 import uuid
 
 from flask import Flask, abort, redirect, render_template, request, url_for
+from PIL import Image
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -14,6 +15,7 @@ DB_PATH = Path(os.getenv("DATABASE_PATH", str(BASE_DIR / "board.db")))
 UPLOAD_DIR = Path(os.getenv("UPLOAD_FOLDER", str(BASE_DIR / "static" / "uploads")))
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024
+MAX_IMAGE_DIMENSION = 1280
 
 
 def get_db_connection() -> sqlite3.Connection:
@@ -64,7 +66,32 @@ def save_uploaded_image(current_image_path: str | None = None) -> tuple[str | No
 
     stored_name = f"{uuid.uuid4().hex}.{extension}"
     destination = UPLOAD_DIR / stored_name
-    image_file.save(destination)
+
+    try:
+        with Image.open(image_file.stream) as img:
+            img.thumbnail((MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION))
+
+            save_kwargs = {}
+            if extension in {"jpg", "jpeg"}:
+                save_format = "JPEG"
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
+                save_kwargs = {"optimize": True, "quality": 85}
+            elif extension == "png":
+                save_format = "PNG"
+                save_kwargs = {"optimize": True}
+            elif extension == "webp":
+                save_format = "WEBP"
+                save_kwargs = {"quality": 85}
+            elif extension == "gif":
+                save_format = "GIF"
+            else:
+                save_format = img.format or "PNG"
+
+            img.save(destination, format=save_format, **save_kwargs)
+    except OSError:
+        return current_image_path, "유효한 이미지 파일이 아닙니다."
+
     return f"uploads/{stored_name}", None
 
 
