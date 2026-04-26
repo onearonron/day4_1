@@ -27,39 +27,53 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-6 py-12">
-    <div class="mb-10">
-      <h1 class="font-['Work_Sans'] text-[48px] leading-[1.1] font-bold tracking-[-0.02em] mb-2">주민 불만 신고</h1>
-      <p class="font-['Inter'] text-[18px] leading-[1.6] text-[#596578]">게시글 목록입니다.</p>
+  <main class="max-w-7xl mx-auto px-6 py-4">
+    <div class="mb-4">
+      <h1 class="font-['Work_Sans'] text-2xl leading-tight font-bold tracking-[-0.02em] mb-3">한국 소식</h1>
+      <form method="get" action="{{ url_for('post_list') }}" class="flex items-center gap-2 w-full" id="searchForm">
+        <input type="text" name="q" value="{{ query }}" placeholder="검색어를 입력하세요" class="flex-1 border border-[#e7bdbb] bg-white px-4 py-2 text-sm focus:outline-none focus:border-[#bb0026]"/>
+        <button type="submit" class="bg-[#EF233C] text-white px-4 py-2 text-xs font-semibold tracking-wide hover:opacity-90 shrink-0">&#128269; 검색</button>
+        <select name="sort" onchange="document.getElementById('searchForm').submit()" class="border border-[#e7bdbb] bg-white px-4 py-2 text-sm focus:outline-none focus:border-[#bb0026] cursor-pointer min-w-[150px]">
+          <option value="latest" {% if sort == 'latest' %}selected{% endif %}>최신순</option>
+          <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>오래된순</option>
+          <option value="title" {% if sort == 'title' %}selected{% endif %}>제목순</option>
+        </select>
+        {% if query %}
+        <a href="{{ url_for('post_list') }}" class="text-xs text-[#EF233C] hover:underline whitespace-nowrap shrink-0">전체보기</a>
+        {% endif %}
+      </form>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <section class="md:col-span-8 flex flex-col gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <section class="md:col-span-8 flex flex-col gap-1.5">
         {% if posts %}
           {% for post in posts %}
           <article class="bg-[#fff0ef] group">
-            <div class="p-6">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="bg-slate-200 text-[#596578] px-2 py-[2px] text-xs font-semibold uppercase tracking-widest">POST</span>
-                <span class="text-xs text-slate-400">{{ post.created_at }}</span>
+            <div class="px-4 py-2.5">
+              <div class="flex items-center justify-between gap-3 mb-0.5">
+                <span class="bg-slate-200 text-[#596578] px-1.5 py-[1px] text-[10px] font-semibold uppercase tracking-widest">POST</span>
+                <span class="text-[11px] text-slate-400 shrink-0">{{ post.created_at }}</span>
               </div>
-              <h2 class="font-['Work_Sans'] text-[32px] leading-[1.2] font-bold tracking-[-0.01em] mb-3 group-hover:text-[#bb0026] transition-colors">
+              <h2 class="font-['Work_Sans'] text-[15px] leading-snug font-bold tracking-tight group-hover:text-[#bb0026] transition-colors">
                 <a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a>
               </h2>
               {% if post.image_path %}
-              <img src="{{ url_for('static', filename=post.image_path) }}" alt="게시글 이미지" class="w-full h-40 object-cover border border-[#e7bdbb] mb-4"/>
+              <img src="{{ url_for('static', filename=post.image_path) }}" alt="게시글 이미지" class="w-full h-20 object-cover border border-[#e7bdbb] mt-1"/>
               {% endif %}
-              <p class="font-['Inter'] text-[16px] leading-[1.5] text-[#596578] mb-4">
-                {{ post.content[:140] }}{% if post.content|length > 140 %}...{% endif %}
+              <p class="font-['Inter'] text-[12px] leading-[1.4] text-[#596578] mt-0.5">
+                {{ post.content[:80] }}{% if post.content|length > 80 %}...{% endif %}
               </p>
-              <a class="text-[#EF233C] text-xs font-semibold uppercase tracking-widest hover:underline" href="{{ url_for('post_detail', post_id=post.id) }}">Read More</a>
             </div>
           </article>
           {% endfor %}
         {% else %}
           <div class="border-2 border-[#e7bdbb] bg-white p-8 text-center">
+            {% if query %}
+            <p class="font-['Inter'] text-[#596578] mb-4">"{{ query }}" 검색 결과가 없습니다.</p>
+            {% else %}
             <p class="font-['Inter'] text-[#596578] mb-4">아직 작성된 글이 없습니다.</p>
-            <a class="inline-block bg-[#EF233C] text-white px-5 py-2 text-xs font-semibold uppercase tracking-widest" href="{{ url_for('post_new') }}">첫 글 작성하기</a>
+            {% endif %}
+            <a class="inline-block bg-[#EF233C] text-white px-5 py-2 text-xs font-semibold uppercase tracking-widest" href="{{ url_for('post_new') }}">글 작성하기</a>
           </div>
         {% endif %}
       </section>
@@ -87,6 +101,22 @@
         </section>
       </aside>
     </div>
+
+    <nav class="flex justify-center items-center gap-4 mt-8">
+      {% if page > 1 %}
+      <a href="{{ url_for('post_list', page=page-1, q=query, sort=sort) }}" class="border border-[#e7bdbb] bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[#291716] hover:bg-[#fff0ef] transition-colors">이전</a>
+      {% else %}
+      <span class="border border-gray-200 bg-gray-100 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-400 cursor-not-allowed">이전</span>
+      {% endif %}
+
+      <span class="text-sm text-[#596578] font-medium">{{ page }} / {{ total_pages }}</span>
+
+      {% if page < total_pages %}
+      <a href="{{ url_for('post_list', page=page+1, q=query, sort=sort) }}" class="border border-[#e7bdbb] bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[#291716] hover:bg-[#fff0ef] transition-colors">다음</a>
+      {% else %}
+      <span class="border border-gray-200 bg-gray-100 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-400 cursor-not-allowed">다음</span>
+      {% endif %}
+    </nav>
   </main>
 </body>
 </html>

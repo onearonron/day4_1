@@ -8,9 +8,13 @@ from flask import Flask, abort, redirect, render_template, request, url_for
 from PIL import Image
 from werkzeug.utils import secure_filename
 
+import psycopg2
+import psycopg2.extras
+
 app = Flask(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent
+DATABASE_URL = os.getenv("DATABASE_URL")
 DB_PATH = Path(os.getenv("DATABASE_PATH", str(BASE_DIR / "board.db")))
 UPLOAD_DIR = Path(os.getenv("UPLOAD_FOLDER", str(BASE_DIR / "static" / "uploads")))
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
@@ -18,32 +22,60 @@ MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024
 MAX_IMAGE_DIMENSION = 1280
 
 
-def get_db_connection() -> sqlite3.Connection:
+def get_db_connection():
+    if DATABASE_URL:
+        conn = psycopg2.connect(DATABASE_URL)
+        conn.autocommit = False
+        return conn
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 
+def _ph():
+    """Return placeholder: %s for PostgreSQL, ? for SQLite."""
+    return "%s" if DATABASE_URL else "?"
+
+
 def init_db() -> None:
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    ph = _ph()
     with get_db_connection() as conn:
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS post (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                content TEXT NOT NULL,
-                image_path TEXT,
-                created_at TEXT NOT NULL
+        if DATABASE_URL:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS post (
+                    id SERIAL PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    image_path TEXT,
+                    created_at TEXT NOT NULL
+                )
+                """
             )
-            """
-        )
-
-        columns = {
-            row[1]
-            for row in conn.execute("PRAGMA table_info(post)").fetchall()
-        }
-        if "image_path" not in columns:
+            cols = {
+                row[0]
+                for row in conn.execute(
+                    "SELECT column_name FROM information_schema.columns WHERE table_name = 'post'"
+                ).fetchall()
+            }
+        else:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS post (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    image_path TEXT,
+                    created_at TEXT NOT NULL
+                )
+                """
+            )
+            cols = {
+                row[1]
+                for row in conn.execute("PRAGMA table_info(post)").fetchall()
+            }
+        if "image_path" not in cols:
             conn.execute("ALTER TABLE post ADD COLUMN image_path TEXT")
             conn.commit()
 
@@ -100,13 +132,70 @@ def root() -> str:
     return redirect(url_for("post_list"))
 
 
+PER_PAGE = 10
+
+
+SORT_OPTIONS = {
+    "latest": "id DESC",
+    "oldest": "id ASC",
+    "title": "title ASC",
+}
+
+
+def _row_to_dict(row) -> dict:
+    """Convert a DB row (sqlite3.Row or psycopg2 tuple) to dict."""
+    if row is None:
+        return {}
+    if isinstance(row, dict):
+        return row
+    try:
+        return dict(row)
+    except (TypeError, ValueError):
+        return {}
+
+
 @app.route("/posts")
 def post_list() -> str:
+    ph = _ph()
+    page = request.args.get("page", 1, type=int)
+    query = request.args.get("q", "").strip()
+    sort = request.args.get("sort", "latest")
+    if sort not in SORT_OPTIONS:
+        sort = "latest"
+    order_by = SORT_OPTIONS[sort]
+
     with get_db_connection() as conn:
-        posts = conn.execute(
-            "SELECT id, title, content, image_path, created_at FROM post ORDER BY id DESC"
-        ).fetchall()
-    return render_template("list.html", posts=posts)
+        if query:
+            like = f"%{query}%"
+            total = conn.execute(
+                f"SELECT COUNT(*) FROM post WHERE title LIKE {ph} OR content LIKE {ph}",
+                (like, like),
+            ).fetchone()[0]
+            total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+            page = max(1, min(page, total_pages))
+            offset = (page - 1) * PER_PAGE
+            rows = conn.execute(
+                f"SELECT id, title, content, image_path, created_at FROM post WHERE title LIKE {ph} OR content LIKE {ph} ORDER BY {order_by} LIMIT {ph} OFFSET {ph}",
+                (like, like, PER_PAGE, offset),
+            ).fetchall()
+        else:
+            total = conn.execute("SELECT COUNT(*) FROM post").fetchone()[0]
+            total_pages = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+            page = max(1, min(page, total_pages))
+            offset = (page - 1) * PER_PAGE
+            rows = conn.execute(
+                f"SELECT id, title, content, image_path, created_at FROM post ORDER BY {order_by} LIMIT {ph} OFFSET {ph}",
+                (PER_PAGE, offset),
+            ).fetchall()
+        posts = [_row_to_dict(r) for r in rows]
+    return render_template(
+        "list.html",
+        posts=posts,
+        page=page,
+        total_pages=total_pages,
+        query=query,
+        sort=sort,
+    )
 
 
 @app.route("/posts/new", methods=["GET", "POST"])
@@ -148,11 +237,19 @@ def post_new() -> str:
             )
 
         with get_db_connection() as conn:
-            cursor = conn.execute(
-                "INSERT INTO post (title, content, image_path, created_at) VALUES (?, ?, ?, ?)",
-                (title, content, image_path, created_at),
-            )
-            post_id = cursor.lastrowid
+            ph = _ph()
+            if DATABASE_URL:
+                cursor = conn.execute(
+                    f"INSERT INTO post (title, content, image_path, created_at) VALUES ({ph}, {ph}, {ph}, {ph}) RETURNING id",
+                    (title, content, image_path, created_at),
+                )
+                post_id = cursor.fetchone()[0]
+            else:
+                cursor = conn.execute(
+                    f"INSERT INTO post (title, content, image_path, created_at) VALUES ({ph}, {ph}, {ph}, {ph})",
+                    (title, content, image_path, created_at),
+                )
+                post_id = cursor.lastrowid
             conn.commit()
 
         return redirect(url_for("post_detail", post_id=post_id))
@@ -171,13 +268,15 @@ def post_new() -> str:
 
 @app.route("/posts/<int:post_id>/edit", methods=["GET", "POST"])
 def post_edit(post_id: int) -> str:
+    ph = _ph()
     with get_db_connection() as conn:
-        post = conn.execute(
-            "SELECT id, title, content, image_path FROM post WHERE id = ?",
+        row = conn.execute(
+            f"SELECT id, title, content, image_path FROM post WHERE id = {ph}",
             (post_id,),
         ).fetchone()
+        post = _row_to_dict(row)
 
-    if post is None:
+    if not post:
         abort(404)
 
     if request.method == "POST":
@@ -217,7 +316,7 @@ def post_edit(post_id: int) -> str:
 
         with get_db_connection() as conn:
             conn.execute(
-                "UPDATE post SET title = ?, content = ?, image_path = ? WHERE id = ?",
+                f"UPDATE post SET title = {ph}, content = {ph}, image_path = {ph} WHERE id = {ph}",
                 (title, content, image_path, post_id),
             )
             conn.commit()
@@ -238,8 +337,9 @@ def post_edit(post_id: int) -> str:
 
 @app.route("/posts/<int:post_id>/delete", methods=["POST"])
 def post_delete(post_id: int) -> str:
+    ph = _ph()
     with get_db_connection() as conn:
-        conn.execute("DELETE FROM post WHERE id = ?", (post_id,))
+        conn.execute(f"DELETE FROM post WHERE id = {ph}", (post_id,))
         conn.commit()
 
     return redirect(url_for("post_list"))
@@ -247,13 +347,15 @@ def post_delete(post_id: int) -> str:
 
 @app.route("/posts/<int:post_id>")
 def post_detail(post_id: int) -> str:
+    ph = _ph()
     with get_db_connection() as conn:
-        post = conn.execute(
-            "SELECT id, title, content, image_path, created_at FROM post WHERE id = ?",
+        row = conn.execute(
+            f"SELECT id, title, content, image_path, created_at FROM post WHERE id = {ph}",
             (post_id,),
         ).fetchone()
+        post = _row_to_dict(row)
 
-    if post is None:
+    if not post:
         abort(404)
 
     return render_template("detail.html", post=post)
